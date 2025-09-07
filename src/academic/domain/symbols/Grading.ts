@@ -1,0 +1,5 @@
+export const GRADING_SYMBOLS = {
+    REPOSITORY: Symbol.for('GRADING_REPOSITORY'),
+    SERVICE: Symbol.for('GRADING_SERVICE'),
+    FINAL_USE_CASE: Symbol.for('FINAL_GRADE_USE_CASE')
+};

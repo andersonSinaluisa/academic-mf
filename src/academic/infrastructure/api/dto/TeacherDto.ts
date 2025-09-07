@@ -1,18 +1,17 @@
-
-export interface TeacherOutputDto {
-
-    id: number;
-    fistName: string;
+export interface TeacherInputDto {
+    firstName: string;
     lastName: string;
-    phone: string;
-    birthDate: string;
-    uuidUser: string;
-    address: string;
-    identification: string;
-    nacionality: string;
-    gender: string;
-    image: string;
+    phone?: string;
+    birthDate?: string;
+    uuidUser?: string;
+    address?: string;
+    identification?: string;
+    nationality?: string;
+    gender?: string;
+    image?: string;
 }
 
-
-export type TeacherInputDto = Omit<TeacherOutputDto, 'id'>;
+export interface TeacherOutputDto extends TeacherInputDto {
+    id: number;
+    createdAt?: string;
+}

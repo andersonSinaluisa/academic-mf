@@ -1,10 +1,9 @@
-
-
 export const TEACHER_SYMBOLS = {
-    REPOSITORY: Symbol.for("TeacherRepository"),
-    SERVICE: Symbol.for("TeacherService"),
-    LIST_USE_CASE: Symbol.for("ListTeachersUseCase"),
-    CREATE_USE_CASE: Symbol.for("CreateTeacherUseCase"),
-    UPDATE_USE_CASE: Symbol.for("UpdateTeacherUseCase"),
-    DELETE_USE_CASE: Symbol.for("DeleteTeacherUseCase"),
+    REPOSITORY: Symbol.for('TEACHER_REPOSITORY'),
+    SERVICE: Symbol.for('TEACHER_SERVICE'),
+    CREATE_USE_CASE: Symbol.for('CREATE_TEACHER_USE_CASE'),
+    LIST_USE_CASE: Symbol.for('LIST_TEACHERS_USE_CASE'),
+    GET_USE_CASE: Symbol.for('GET_TEACHER_USE_CASE'),
+    UPDATE_USE_CASE: Symbol.for('UPDATE_TEACHER_USE_CASE'),
+    DELETE_USE_CASE: Symbol.for('DELETE_TEACHER_USE_CASE'),
 };
