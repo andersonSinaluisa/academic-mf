@@ -1,5 +1,5 @@
 import { Either } from "purify-ts/Either";
-import Failure from "@/scolar/domain/failure";
+import Failure from "@/academic/domain/entities/failure";
 
 export interface UseCase<T, C extends UseCaseCommand> {
     execute(command: C): Promise<Either<Failure[], T | undefined>>;

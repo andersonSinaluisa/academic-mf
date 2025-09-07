@@ -1,0 +1,5 @@
+export const PROMOTION_SYMBOLS = {
+    REPOSITORY: Symbol.for('PROMOTION_REPOSITORY'),
+    SERVICE: Symbol.for('PROMOTION_SERVICE'),
+    USE_CASE: Symbol.for('PROMOTION_USE_CASE')
+};
