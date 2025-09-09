@@ -12,5 +12,9 @@ export class Teacher {
         public gender?: string,
         public image?: string,
         public createdAt?: string
-    ) {}
+    ) {
+      
+    }
+
+   
 }

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, Plus, Phone } from "lucide-react"
 import { Teacher } from "@/academic/domain/entities/Teacher"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface TeacherListPresenterProps {
     teachers: Teacher[]
@@ -25,25 +26,7 @@ export function TeacherListPresenter({
     onSearchChange,
     onAddTeacher,
 }: TeacherListPresenterProps) {
-    if (loading) {
-        return (
-            <Card>
-                <CardContent className="flex items-center justify-center py-8">
-                    <div className="text-muted-foreground">Cargando docentes...</div>
-                </CardContent>
-            </Card>
-        )
-    }
-
-    if (error) {
-        return (
-            <Card>
-                <CardContent className="flex items-center justify-center py-8">
-                    <div className="text-destructive">Error: {error}</div>
-                </CardContent>
-            </Card>
-        )
-    }
+   
 
     return (
         <div className="space-y-6">
@@ -69,6 +52,16 @@ export function TeacherListPresenter({
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {
+                            loading &&
+                            <Skeleton className="h-24 w-full col-span-full" />
+                            
+                        }
+                        {
+                            error &&
+                            <div className="text-destructive text-center col-span-full">{error}</div>
+                            
+                        }
                         {teachers.map((teacher) => (
                             <Card key={teacher.id} className="hover:shadow-md transition-shadow">
                                 <CardContent className="p-4">
