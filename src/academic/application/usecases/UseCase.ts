@@ -5,9 +5,9 @@ export interface UseCase<T, C extends UseCaseCommand> {
     execute(command: C): Promise<Either<Failure[], T | undefined>>;
 }
 
-export type UseCaseCommand = { }
+export type UseCaseCommand = object;
 
-export class EmptyUseCaseCommand implements UseCaseCommand { }
+export class EmptyUseCaseCommand implements UseCaseCommand {}
 
 export class PaginateUseCaseCommand implements UseCaseCommand {
     constructor(
@@ -15,14 +15,14 @@ export class PaginateUseCaseCommand implements UseCaseCommand {
         private perPage: number,
         private orderBy: string[],
         private where?: string,
+    ) {}
 
-    ) { }
     get data() {
         return {
             page: this.page,
             perPage: this.perPage,
             search: this.where,
-            orderBy: this.orderBy
+            orderBy: this.orderBy,
         };
     }
 }
