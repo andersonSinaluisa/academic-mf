@@ -14,15 +14,13 @@ export class StudentRepositoryImpl implements StudentRepository {
         return StudentMapper.toDomain(res.data);
     }
 
-    async list(page: number, limit: number, uuidParallel?: string): Promise<Page<Student>> {
+    async list(page: number, limit: number, uuidParallel?: string, search?: string): Promise<Page<Student>> {
         const params = new URLSearchParams();
         params.append('page', page.toString());
         params.append('limit', limit.toString());
         if (uuidParallel) params.append('uuidParallel', uuidParallel);
-        const res = await ApiInstance.get<Page<StudentOutputDto>>(
-            '/students',
-            { params }
-        );
+        if (search) params.append('search', search);
+        const res = await ApiInstance.get<Page<StudentOutputDto>>('/students', { params });
         return {
             ...res.data,
             content: res.data.content.map(StudentMapper.toDomain)

@@ -7,10 +7,13 @@ import { ListTeacherAssignmentsUseCase } from "@/academic/application/usecases/t
 import { TeacherAssignmentListContainer } from "./TeacherAssignmentListContainer";
 import { TeacherAssignment } from "@/academic/domain/entities/TeacherAssignment";
 import { toast } from "@/hooks/use-toast";
+import { Page } from "@/lib/utils";
 
 describe("TeacherAssignmentListContainer", () => {
   let listUseCase: ListTeacherAssignmentsUseCase = {
-    execute: vi.fn().mockResolvedValue(mockRight<TeacherAssignment[]>([])),
+    execute: vi.fn().mockResolvedValue(
+      mockRight<Page<TeacherAssignment>>({ content: [], page: 1, size: 10, total: 0, totalPage: 0 })
+    ),
   } as unknown as ListTeacherAssignmentsUseCase;
 
   beforeEach(() => {
@@ -47,9 +50,15 @@ describe("TeacherAssignmentListContainer", () => {
   it("muestra lista de asignaciones si la carga es exitosa", async () => {
     listUseCase = {
       execute: vi.fn().mockResolvedValue(
-        mockRight([
-          { id: 1, teacherId: 1, courseId: 2, subjectId: 3, schoolYearId: "2023" } as TeacherAssignment,
-        ])
+        mockRight<Page<TeacherAssignment>>({
+          content: [
+            { id: 1, teacherId: 1, courseId: 2, subjectId: 3, schoolYearId: "2023" } as TeacherAssignment,
+          ],
+          page: 1,
+          size: 10,
+          total: 1,
+          totalPage: 1,
+        })
       ),
     } as unknown as ListTeacherAssignmentsUseCase;
 

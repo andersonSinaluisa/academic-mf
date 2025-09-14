@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { Meeting } from "../entities/Meeting";
 import { MeetingRepository } from "../interfaces/MeetingRepository";
 import { MEETING_SYMBOLS } from "../symbols/Meeting";
+import { Page } from "@/lib/utils";
 
 @injectable()
 export class MeetingService {
@@ -14,8 +15,8 @@ export class MeetingService {
         return this.repository.create(meeting);
     }
 
-    list(): Promise<Meeting[]> {
-        return this.repository.list();
+    list(page: number, limit: number, topic?: string): Promise<Page<Meeting>> {
+        return this.repository.list(page, limit, topic);
     }
 
     update(meeting: Meeting): Promise<Meeting> {

@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { TeacherAssignmentRepository } from "../interfaces/TeacherAssignmentRepository";
 import { TEACHER_ASSIGNMENT_SYMBOLS } from "../symbols/TeacherAssignment";
 import { TeacherAssignment } from "../entities/TeacherAssignment";
+import { Page } from "@/lib/utils";
 
 @injectable()
 export class TeacherAssignmentService {
@@ -18,7 +19,7 @@ export class TeacherAssignmentService {
         return this.repository.getById(id);
     }
 
-    async list(teacherId?: number, courseId?: number): Promise<TeacherAssignment[]> {
-        return this.repository.list(teacherId, courseId);
+    async list(page: number, limit: number, teacherId?: number, courseId?: number): Promise<Page<TeacherAssignment>> {
+        return this.repository.list(page, limit, teacherId, courseId);
     }
 }

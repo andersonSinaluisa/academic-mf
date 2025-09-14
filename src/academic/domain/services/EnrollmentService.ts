@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { Enrollment } from "../entities/Enrollment";
 import { EnrollmentRepository } from "../interfaces/EnrollmentRepository";
 import { ENROLLMENT_SYMBOLS } from "../symbols/Enrollment";
+import { Page } from "@/lib/utils";
 
 @injectable()
 export class EnrollmentService {
@@ -14,8 +15,8 @@ export class EnrollmentService {
         return this.repository.create(enrollment);
     }
 
-    list(): Promise<Enrollment[]> {
-        return this.repository.list();
+    list(page: number, limit: number, search?: string): Promise<Page<Enrollment>> {
+        return this.repository.list(page, limit, search);
     }
 
     update(enrollment: Enrollment): Promise<Enrollment> {

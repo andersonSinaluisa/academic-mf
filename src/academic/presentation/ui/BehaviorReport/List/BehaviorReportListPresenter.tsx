@@ -3,12 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, UserX } from "lucide-react";
 import { BehaviorReport } from "@/academic/domain/entities/BehaviorReport";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Page } from "@/lib/utils";
 
 interface Props {
-  reports: BehaviorReport[];
+  reports: Page<BehaviorReport>;
   loading: boolean;
   error: string | null;
   searchTerm: string;
@@ -48,11 +50,11 @@ export function BehaviorReportListPresenter({
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {loading && <Skeleton className="h-24 w-full col-span-full" />}
+            {loading && <Skeleton role="status" className="h-24 w-full col-span-full" />}
             {error && (
               <div className="text-destructive text-center col-span-full">{error}</div>
             )}
-            {reports.map((report) => (
+            {reports.content.map(report => (
               <Card key={report.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <p className="font-semibold text-sm">Estudiante: {report.studentId}</p>
@@ -64,11 +66,35 @@ export function BehaviorReportListPresenter({
             ))}
           </div>
 
-          {reports.length === 0 && !loading && !error && (
-            <div className="text-center py-8 text-muted-foreground">
-              No se encontraron reportes
+          {reports.content.length === 0 && !loading && !error && (
+            <div className="col-span-3 text-center py-8 text-muted-foreground w-full flex flex-col items-center space-y-4">
+              <UserX className="h-12 w-12 text-muted-foreground" />
+              <p className="text-lg font-medium">
+                {searchTerm
+                  ? `No encontramos resultados para "${searchTerm}".`
+                  : "No hay reportes registrados aún."}
+              </p>
+              {!searchTerm && <Button onClick={onAddReport}>Registrar reporte</Button>}
             </div>
           )}
+
+          <Pagination className="col-span-full justify-center">
+            <PaginationPrevious className="bg-background" />
+            {reports.total > 1 && Array.from({ length: reports.totalPage }).map((_, index) => (
+              <PaginationLink
+                key={`page-${index + 1}`}
+                href={`/reportes-conducta?page=${index + 1}${searchTerm ? `&filter=${searchTerm}` : ""}`}
+                isActive={index === reports.page}
+                className="bg-background"
+              >
+                {index + 1}
+              </PaginationLink>
+            ))}
+            <PaginationNext className="bg-background" />
+          </Pagination>
+          <div className="col-span-full text-center text-sm text-muted-foreground">
+            Página {reports.page} de {reports.totalPage} - Total de reportes: {reports.total}
+          </div>
         </CardContent>
       </Card>
     </div>

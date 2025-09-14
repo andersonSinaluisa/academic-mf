@@ -15,8 +15,8 @@ export class StudentService {
         return this.repository.create(student);
     }
 
-    async list(page: number, limit: number, uuidParallel?: string): Promise<Page<Student>> {
-        return this.repository.list(page, limit, uuidParallel);
+    async list(page: number, limit: number, uuidParallel?: string, search?: string): Promise<Page<Student>> {
+        return this.repository.list(page, limit, uuidParallel, search);
     }
 
     async getById(id: number): Promise<Student | null> {

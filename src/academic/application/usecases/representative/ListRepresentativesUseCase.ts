@@ -10,7 +10,8 @@ import { REPRESENTATIVE_SYMBOLS } from "@/academic/domain/symbols/Representative
 export class ListRepresentativesCommand implements UseCaseCommand {
     constructor(
         public readonly page: number,
-        public readonly limit: number
+        public readonly limit: number,
+        public readonly search?: string
     ) { }
 }
 
@@ -23,7 +24,7 @@ export class ListRepresentativesUseCase implements UseCase<Page<Representative>,
 
     async execute(command: ListRepresentativesCommand): Promise<Either<AbstractFailure[], Page<Representative> | undefined>> {
         try {
-            const reps = await this.service.list(command.page, command.limit);
+            const reps = await this.service.list(command.page, command.limit, command.search);
             return Right(reps);
         } catch (error) {
             return Left([AbstractFailure.fromError(error)]);

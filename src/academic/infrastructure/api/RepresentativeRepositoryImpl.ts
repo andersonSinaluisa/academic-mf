@@ -11,10 +11,11 @@ export class RepresentativeRepositoryImpl implements RepresentativeRepository {
         return RepresentativeMapper.toDomain(res.data);
     }
 
-    async list(page: number, limit: number): Promise<Page<Representative>> {
+    async list(page: number, limit: number, search?: string): Promise<Page<Representative>> {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("limit", limit.toString());
+        if (search) params.append("search", search);
         const res = await ApiInstance.get<Page<RepresentativeOutputDto>>("/representative", { params });
         return {
             ...res.data,

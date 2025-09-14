@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { BehaviorReport } from "../entities/BehaviorReport";
 import { BehaviorReportRepository } from "../interfaces/BehaviorReportRepository";
 import { BEHAVIOR_REPORT_SYMBOLS } from "../symbols/BehaviorReport";
+import { Page } from "@/lib/utils";
 
 @injectable()
 export class BehaviorReportService {
@@ -14,8 +15,8 @@ export class BehaviorReportService {
         return this.repository.create(report);
     }
 
-    list(): Promise<BehaviorReport[]> {
-        return this.repository.list();
+    list(page: number, limit: number, search?: string): Promise<Page<BehaviorReport>> {
+        return this.repository.list(page, limit, search);
     }
 
     update(report: BehaviorReport): Promise<BehaviorReport> {

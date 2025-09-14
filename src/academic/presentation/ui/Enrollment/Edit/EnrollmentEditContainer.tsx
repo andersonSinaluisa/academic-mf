@@ -18,17 +18,24 @@ export const EnrollmentEditContainer = () => {
 
   const fetchEnrollment = useCallback(async () => {
     if (!id) return;
-    const res = await listUseCase.execute(new ListEnrollmentsCommand());
-    res.ifRight(list => {
-      const enrollment = list?.find(e => e.id === Number(id));
-      if (enrollment) {
-        setValue("id", enrollment.id);
-        setValue("courseId", enrollment.courseId);
-        (setValue as any)("studentId", enrollment.studentId);
-      }
-    }).ifLeft(failures => {
-      toast({ title: "Error", description: failures.map(f=>f.message).join(", "), duration:5000, variant:"destructive" });
-    });
+    const res = await listUseCase.execute(new ListEnrollmentsCommand(1, 1000));
+    res
+      .ifRight(list => {
+        const enrollment = list?.content.find(e => e.id === Number(id));
+        if (enrollment) {
+          setValue("id", enrollment.id);
+          setValue("courseId", enrollment.courseId);
+          (setValue as any)("studentId", enrollment.studentId);
+        }
+      })
+      .ifLeft(failures => {
+        toast({
+          title: "Error",
+          description: failures.map(f => f.message).join(", "),
+          duration: 5000,
+          variant: "destructive",
+        });
+      });
   }, [id, listUseCase, setValue]);
 
   useEffect(() => { fetchEnrollment(); }, [fetchEnrollment]);

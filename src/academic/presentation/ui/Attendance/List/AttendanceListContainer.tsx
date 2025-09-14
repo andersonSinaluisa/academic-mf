@@ -4,36 +4,54 @@ import { useInjection } from "inversify-react";
 import { ATTENDANCE_SYMBOLS } from "@/academic/domain/symbols/Attendance";
 import { useCallback, useEffect, useState } from "react";
 import { Attendance } from "@/academic/domain/entities/Attendance";
+import { Page } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate, useSearchParams } from "react-router";
 
 export const AttendanceListContainer = () => {
   const listUseCase = useInjection<ListAttendanceUseCase>(ATTENDANCE_SYMBOLS.LIST_USE_CASE);
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+  const filter = searchParams.get("filter") || "";
+
+  const [attendances, setAttendances] = useState<Page<Attendance>>({
+    content: [],
+    page: 0,
+    size: 10,
+    total: 0,
+    totalPage: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchAttendance = useCallback(async () => {
     setLoading(true);
-    setError(null);
-    const res = await listUseCase.execute(new ListAttendanceCommand());
-    res.ifRight(data => { setAttendances(data ?? []); }).ifLeft(failures => { setError(failures.map(f=>f.message).join(", ")); });
+    const res = await listUseCase.execute(new ListAttendanceCommand(page, 10, filter));
+    res
+      .ifRight(data => {
+        if (data) setAttendances(data);
+      })
+      .ifLeft(failures => {
+        const msg = failures.map(f => f.message).join(", ");
+        toast({ title: "Error", description: msg, variant: "destructive" });
+      });
     setLoading(false);
-  }, [listUseCase]);
+  }, [listUseCase, page, filter]);
 
   useEffect(() => { fetchAttendance(); }, [fetchAttendance]);
 
-  const handleSearchChange = (term: string) => setSearchTerm(term);
-
-  const filtered = attendances.filter(a => a.studentId.toString().includes(searchTerm));
+  const handleSearchChange = (term: string) => {
+    navigate({ pathname: "/asistencias", search: `?page=1&filter=${term}` });
+  };
 
   return (
     <AttendanceListPresenter
-      attendances={filtered}
+      attendances={attendances}
       loading={loading}
-      error={error}
-      searchTerm={searchTerm}
+      error={null}
+      searchTerm={filter}
       onSearchChange={handleSearchChange}
-      onAdd={() => {}}
+      onAdd={() => navigate("/asistencias/nuevo")}
     />
   );
 };

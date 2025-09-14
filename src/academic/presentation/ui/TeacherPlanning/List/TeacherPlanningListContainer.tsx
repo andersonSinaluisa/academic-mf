@@ -4,34 +4,61 @@ import { TEACHER_PLANNING_SYMBOLS } from "@/academic/domain/symbols/TeacherPlann
 import { useInjection } from "inversify-react";
 import { useCallback, useEffect, useState } from "react";
 import { TeacherPlanning } from "@/academic/domain/entities/TeacherPlanning";
+import { Page } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate, useSearchParams } from "react-router";
 
 export const TeacherPlanningListContainer = () => {
   const listUseCase = useInjection<ListTeacherPlanningsUseCase>(TEACHER_PLANNING_SYMBOLS.LIST_USE_CASE);
-  const [plannings, setPlannings] = useState<TeacherPlanning[]>([]);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+  const filter = searchParams.get("filter") || "";
+
+  const [plannings, setPlannings] = useState<Page<TeacherPlanning>>({
+    content: [],
+    page: 0,
+    size: 10,
+    total: 0,
+    totalPage: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    setError(null);
-    const res = await listUseCase.execute(new ListTeacherPlanningsCommand());
-    res.ifRight(data => setPlannings(data ?? [])).ifLeft(f => setError(f.map(x => x.message).join(", ")));
+    const res = await listUseCase.execute(new ListTeacherPlanningsCommand(page, 10, undefined, undefined, undefined, filter));
+    res
+      .ifRight(data => {
+        if (data) setPlannings(data);
+      })
+      .ifLeft(f =>
+        toast({
+          title: "Error",
+          description: f.map(x => x.message).join(", "),
+          variant: "destructive",
+        })
+      );
     setLoading(false);
-  }, [listUseCase]);
+  }, [listUseCase, page, filter]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const filtered = plannings.filter(p => p.topic.toLowerCase().includes(searchTerm.toLowerCase()));
+  const handleSearchChange = (term: string) => {
+    navigate({ pathname: "/planificaciones-docentes", search: `?page=1&filter=${term}` });
+  };
+
+  const handleAddPlanning = () => {
+    navigate("/planificaciones-docentes/nueva");
+  };
 
   return (
     <TeacherPlanningListPresenter
-      plannings={filtered}
+      plannings={plannings}
       loading={loading}
-      error={error}
-      searchTerm={searchTerm}
-      onSearchChange={setSearchTerm}
-      onAddPlanning={() => {}}
+      error={null}
+      searchTerm={filter}
+      onSearchChange={handleSearchChange}
+      onAddPlanning={handleAddPlanning}
     />
   );
 };

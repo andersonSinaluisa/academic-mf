@@ -5,19 +5,26 @@ import { AbstractFailure } from "@/academic/domain/entities/failure";
 import { Attendance } from "@/academic/domain/entities/Attendance";
 import { AttendanceService } from "@/academic/domain/services/AttendanceService";
 import { ATTENDANCE_SYMBOLS } from "@/academic/domain/symbols/Attendance";
+import { Page } from "@/lib/utils";
 
-export class ListAttendanceCommand implements UseCaseCommand { }
+export class ListAttendanceCommand implements UseCaseCommand {
+    constructor(
+        public page: number,
+        public limit: number,
+        public search?: string
+    ) { }
+}
 
 @injectable()
-export class ListAttendanceUseCase implements UseCase<Attendance[], ListAttendanceCommand> {
+export class ListAttendanceUseCase implements UseCase<Page<Attendance>, ListAttendanceCommand> {
     constructor(
         @inject(ATTENDANCE_SYMBOLS.SERVICE)
         private service: AttendanceService
     ) { }
 
-    async execute(_: ListAttendanceCommand): Promise<Either<AbstractFailure[], Attendance[] | undefined>> {
+    async execute(command: ListAttendanceCommand): Promise<Either<AbstractFailure[], Page<Attendance> | undefined>> {
         try {
-            const list = await this.service.list();
+            const list = await this.service.list(command.page, command.limit, command.search);
             return Right(list);
         } catch (error) {
             return Left([AbstractFailure.fromError(error)]);

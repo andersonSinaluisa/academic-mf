@@ -3,9 +3,10 @@ import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter } from "react-router";
 import { TeacherAssignmentListPresenter } from "./TeacherAssignmentListPresenter";
 import { TeacherAssignment } from "@/academic/domain/entities/TeacherAssignment";
+import { Page } from "@/lib/utils";
 
 const defaultProps = {
-  assignments: [] as TeacherAssignment[],
+  assignments: { content: [], page: 0, size: 10, total: 0, totalPage: 0 } as Page<TeacherAssignment>,
   loading: false,
   error: null as string | null,
   searchTerm: "",
@@ -34,15 +35,19 @@ describe("TeacherAssignmentListPresenter", () => {
   });
 
   it("muestra asignaciones", () => {
-    const assignments: TeacherAssignment[] = [
-      { id: 1, teacherId: 1, courseId: 2, subjectId: 3, schoolYearId: "2023" },
-    ];
+    const assignments: Page<TeacherAssignment> = {
+      content: [{ id: 1, teacherId: 1, courseId: 2, subjectId: 3, schoolYearId: "2023" }],
+      page: 1,
+      size: 10,
+      total: 1,
+      totalPage: 1,
+    };
     renderPresenter({ assignments });
     expect(screen.getByText(/Docente: 1/)).toBeInTheDocument();
   });
 
   it("muestra mensaje cuando no hay asignaciones", () => {
-    renderPresenter({ assignments: [] });
+    renderPresenter({ assignments: { ...defaultProps.assignments, content: [] } });
     expect(screen.getByText("No hay asignaciones registradas aún.")).toBeInTheDocument();
   });
 });

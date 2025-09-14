@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { PROMOTION_ACT_SYMBOLS } from "../symbols/PromotionAct";
 import { PromotionActRepository } from "../interfaces/PromotionActRepository";
 import { PromotionAct } from "../entities/PromotionAct";
+import { Page } from "@/lib/utils";
 
 @injectable()
 export class PromotionActService {
@@ -18,8 +19,8 @@ export class PromotionActService {
         return this.repository.getById(id);
     }
 
-    list(courseId: string, academicYearId: string): Promise<PromotionAct[]> {
-        return this.repository.list(courseId, academicYearId);
+    list(courseId: string, academicYearId: string, page: number, limit: number): Promise<Page<PromotionAct>> {
+        return this.repository.list(courseId, academicYearId, page, limit);
     }
 
     delete(id: number): Promise<void> {

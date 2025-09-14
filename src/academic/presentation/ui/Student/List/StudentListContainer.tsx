@@ -27,7 +27,7 @@ export const StudentListContainer = () => {
 
     const fetchStudents = useCallback(async () => {
         setLoading(true);
-        const res = await listUseCase.execute(new ListStudentsCommand(page, 10));
+        const res = await listUseCase.execute(new ListStudentsCommand(page, 10, undefined, filter));
         res.ifRight(data => {
             if (data) setStudents(data);
         }).ifLeft(failures => {
@@ -39,7 +39,7 @@ export const StudentListContainer = () => {
             });
         });
         setLoading(false);
-    }, [listUseCase, page]);
+    }, [listUseCase, page, filter]);
 
     useEffect(() => {
         fetchStudents();
@@ -49,15 +49,9 @@ export const StudentListContainer = () => {
         navigate({ pathname: "/estudiantes", search: `?page=1&filter=${term}` });
     };
 
-    const filteredContent = students.content.filter(s =>
-        `${s.firstName} ${s.lastName}`.toLowerCase().includes(filter.toLowerCase())
-    );
-
-    const data = { ...students, content: filteredContent };
-
     return (
         <StudentListPresenter
-            students={data}
+            students={students}
             loading={loading}
             error={null}
             onAddStudent={() => navigate("/estudiantes/nuevo")}
