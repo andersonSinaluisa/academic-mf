@@ -15,8 +15,8 @@ export class RepresentativeService {
         return this.repository.create(rep);
     }
 
-    async list(page: number, limit: number): Promise<Page<Representative>> {
-        return this.repository.list(page, limit);
+    async list(page: number, limit: number, search?: string): Promise<Page<Representative>> {
+        return this.repository.list(page, limit, search);
     }
 
     async getById(id: number): Promise<Representative | null> {

@@ -17,7 +17,7 @@ export const AssessmentEditContainer = () => {
 
   const fetchAssessment = useCallback(async () => {
     if (!id) return;
-    const res = await listUseCase.execute(new ListAssessmentsCommand());
+    const res = await listUseCase.execute(new ListAssessmentsCommand(1, 1000));
     res.ifRight(assessments => {
       const assessment = assessments?.find(a => a.id === Number(id));
       if (!assessment) return;

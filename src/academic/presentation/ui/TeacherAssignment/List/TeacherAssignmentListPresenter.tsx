@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Search, Plus, UserX } from "lucide-react";
 import { TeacherAssignment } from "@/academic/domain/entities/TeacherAssignment";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Page } from "@/lib/utils";
 
 interface Props {
-  assignments: TeacherAssignment[];
+  assignments: Page<TeacherAssignment>;
   loading: boolean;
   error: string | null;
   searchTerm: string;
@@ -33,7 +35,7 @@ export const TeacherAssignmentListPresenter = ({ assignments, loading, error, se
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {loading && <Skeleton role="status" className="h-24 w-full col-span-full" />}
           {error && <div className="text-destructive text-center col-span-full">{error}</div>}
-          {assignments.map(a => (
+          {assignments.content.map(a => (
             <Card key={a.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <p className="font-semibold">Docente: {a.teacherId}</p>
@@ -42,8 +44,25 @@ export const TeacherAssignmentListPresenter = ({ assignments, loading, error, se
               </CardContent>
             </Card>
           ))}
+          <Pagination className="col-span-full justify-center">
+            <PaginationPrevious className="bg-background" />
+            {assignments.total > 1 && Array.from({ length: assignments.totalPage }).map((_, index) => (
+              <PaginationLink
+                key={`page-${index + 1}`}
+                href={`/asignaciones-docentes?page=${index + 1}`}
+                isActive={index === assignments.page}
+                className="bg-background"
+              >
+                {index + 1}
+              </PaginationLink>
+            ))}
+            <PaginationNext className="bg-background" />
+          </Pagination>
+          <div className="col-span-full text-center text-sm text-muted-foreground">
+            Página {assignments.page} de {assignments.totalPage} - Total de asignaciones: {assignments.total}
+          </div>
         </div>
-        {assignments.length === 0 && !loading && !error && (
+        {assignments.content.length === 0 && !loading && !error && (
           <div className="col-span-3 text-center py-8 text-muted-foreground w-full flex flex-col items-center space-y-4">
             <UserX className="h-12 w-12 text-muted-foreground" />
             <p className="text-lg font-medium">

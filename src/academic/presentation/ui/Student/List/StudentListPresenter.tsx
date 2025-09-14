@@ -104,7 +104,7 @@ export function StudentListPresenter({
                         {students.total > 1 && Array.from({ length: students.totalPage }).map((_, index) => (
                             <PaginationLink
                                 key={`page-${index + 1}`}
-                                href={`/estudiantes?page=${index + 1}`}
+                                href={`/estudiantes?page=${index + 1}${searchTerm ? `&filter=${searchTerm}` : ""}`}
                                 isActive={index === students.page}
                                 className="bg-background"
                             >
@@ -116,6 +116,7 @@ export function StudentListPresenter({
                     <div className="col-span-full text-center text-sm text-muted-foreground">
                         Página {students.page} de {students.totalPage} - Total de estudiantes: {students.total}
                     </div>
+
                 </CardContent>
             </Card>
         </div>

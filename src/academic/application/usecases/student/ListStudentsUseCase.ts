@@ -11,7 +11,8 @@ export class ListStudentsCommand implements UseCaseCommand {
     constructor(
         public readonly page: number,
         public readonly limit: number,
-        public readonly uuidParallel?: string
+        public readonly uuidParallel?: string,
+        public readonly search?: string
     ) { }
 }
 
@@ -24,7 +25,7 @@ export class ListStudentsUseCase implements UseCase<Page<Student>, ListStudentsC
 
     async execute(command: ListStudentsCommand): Promise<Either<AbstractFailure[], Page<Student> | undefined>> {
         try {
-            const students = await this.service.list(command.page, command.limit, command.uuidParallel);
+            const students = await this.service.list(command.page, command.limit, command.uuidParallel, command.search);
             return Right(students);
         } catch (error) {
             return Left([AbstractFailure.fromError(error)]);

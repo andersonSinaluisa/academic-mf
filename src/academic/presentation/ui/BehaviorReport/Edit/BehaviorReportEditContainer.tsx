@@ -18,9 +18,9 @@ export const BehaviorReportEditContainer = () => {
 
   const fetchReport = useCallback(async () => {
     if (!id) return;
-    const res = await listUseCase.execute(new ListBehaviorReportsCommand());
-    res.ifRight((reports) => {
-      const report = reports?.find(r => r.id === Number(id));
+    const res = await listUseCase.execute(new ListBehaviorReportsCommand(1, 1000));
+    res.ifRight((page) => {
+      const report = page?.content.find(r => r.id === Number(id));
       if (!report) return;
       setValue("id", report.id);
       setValue("description", report.description);

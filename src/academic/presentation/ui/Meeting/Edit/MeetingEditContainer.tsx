@@ -17,7 +17,7 @@ export const MeetingEditContainer = () => {
 
   const fetchMeeting = useCallback(async () => {
     if (!id) return;
-    const res = await listUseCase.execute(new ListMeetingsCommand());
+    const res = await listUseCase.execute(new ListMeetingsCommand(1, 1000));
     res.ifRight(meetings => {
       const meeting = meetings?.find(m => m.id === Number(id));
       if (!meeting) return;

@@ -3,6 +3,7 @@ import { BehaviorReport } from "@/academic/domain/entities/BehaviorReport";
 import { ApiInstance } from "./Api";
 import { BehaviorReportOutputDto } from "./dto/BehaviorReportDto";
 import { BehaviorReportMapper } from "./mappers/BehaviorReportMapper";
+import { Page } from "@/lib/utils";
 
 export class BehaviorReportRepositoryImpl implements BehaviorReportRepository {
     async create(report: BehaviorReport): Promise<BehaviorReport> {
@@ -13,9 +14,16 @@ export class BehaviorReportRepositoryImpl implements BehaviorReportRepository {
         return BehaviorReportMapper.toDomain(res.data);
     }
 
-    async list(): Promise<BehaviorReport[]> {
-        const res = await ApiInstance.get<BehaviorReportOutputDto[]>('/behavior-reports');
-        return res.data.map(BehaviorReportMapper.toDomain);
+    async list(page: number, limit: number, search?: string): Promise<Page<BehaviorReport>> {
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
+        if (search) params.append('search', search);
+        const res = await ApiInstance.get<Page<BehaviorReportOutputDto>>('/behavior-reports', { params });
+        return {
+            ...res.data,
+            content: res.data.content.map(BehaviorReportMapper.toDomain)
+        };
     }
 
     async update(report: BehaviorReport): Promise<BehaviorReport> {

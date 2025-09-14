@@ -101,7 +101,7 @@ export function RepresentativeListPresenter({
                         {representatives.total > 1 && Array.from({ length: representatives.totalPage }).map((_, index) => (
                             <PaginationLink
                                 key={`page-${index + 1}`}
-                                href={`/representantes?page=${index + 1}`}
+                                href={`/representantes?page=${index + 1}${searchTerm ? `&filter=${searchTerm}` : ""}`}
                                 isActive={index === representatives.page}
                                 className="bg-background"
                             >

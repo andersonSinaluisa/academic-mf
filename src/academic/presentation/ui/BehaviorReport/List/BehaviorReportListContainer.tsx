@@ -4,46 +4,62 @@ import { BEHAVIOR_REPORT_SYMBOLS } from "@/academic/domain/symbols/BehaviorRepor
 import { useInjection } from "inversify-react";
 import { useCallback, useEffect, useState } from "react";
 import { BehaviorReportListPresenter } from "./BehaviorReportListPresenter";
+import { Page } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate, useSearchParams } from "react-router";
 
 export const BehaviorReportListContainer = () => {
   const listUseCase = useInjection<ListBehaviorReportsUseCase>(BEHAVIOR_REPORT_SYMBOLS.LIST_USE_CASE);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+  const filter = searchParams.get("filter") || "";
 
-  const [reports, setReports] = useState<BehaviorReport[]>([]);
+  const [reports, setReports] = useState<Page<BehaviorReport>>({
+    content: [],
+    page: 0,
+    size: 10,
+    total: 0,
+    totalPage: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchReports = useCallback(async () => {
     setLoading(true);
-    setError(null);
-    const res = await listUseCase.execute(new ListBehaviorReportsCommand());
-    res.ifRight(data => {
-      setReports(data ?? []);
-    }).ifLeft(failures => {
-      setError(failures.map(f => f.message).join(", "));
-    });
+    const res = await listUseCase.execute(new ListBehaviorReportsCommand(page, 10, filter));
+    res
+      .ifRight(data => {
+        if (data) setReports(data);
+      })
+      .ifLeft(f =>
+        toast({
+          title: "Error",
+          description: f.map(x => x.message).join(", "),
+          variant: "destructive",
+        })
+      );
     setLoading(false);
-  }, [listUseCase]);
+  }, [listUseCase, page, filter]);
 
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
 
   const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
+    navigate({ pathname: "/reportes-conducta", search: `?page=1&filter=${term}` });
   };
 
-  const filteredReports = reports.filter(r =>
-    r.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleAddReport = () => {
+    navigate("/reportes-conducta/nuevo");
+  };
 
   return (
     <BehaviorReportListPresenter
-      reports={filteredReports}
+      reports={reports}
       loading={loading}
-      error={error}
-      onAddReport={() => { }}
-      searchTerm={searchTerm}
+      error={null}
+      onAddReport={handleAddReport}
+      searchTerm={filter}
       onSearchChange={handleSearchChange}
     />
   );

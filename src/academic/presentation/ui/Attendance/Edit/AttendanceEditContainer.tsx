@@ -18,18 +18,25 @@ export const AttendanceEditContainer = () => {
 
   const fetchAttendance = useCallback(async () => {
     if (!id) return;
-    const res = await listUseCase.execute(new ListAttendanceCommand());
-    res.ifRight(list => {
-      const attendance = list?.find(a => a.id === Number(id));
-      if (attendance) {
-        setValue("id", attendance.id);
-        setValue("status", attendance.status);
-        (setValue as any)("studentId", attendance.studentId);
-        (setValue as any)("date", attendance.date);
-      }
-    }).ifLeft(failures => {
-      toast({ title: "Error", description: failures.map(f=>f.message).join(", "), duration:5000, variant:"destructive" });
-    });
+    const res = await listUseCase.execute(new ListAttendanceCommand(1, 1000));
+    res
+      .ifRight(list => {
+        const attendance = list?.content.find(a => a.id === Number(id));
+        if (attendance) {
+          setValue("id", attendance.id);
+          setValue("status", attendance.status);
+          (setValue as any)("studentId", attendance.studentId);
+          (setValue as any)("date", attendance.date);
+        }
+      })
+      .ifLeft(failures => {
+        toast({
+          title: "Error",
+          description: failures.map(f => f.message).join(", "),
+          duration: 5000,
+          variant: "destructive",
+        });
+      });
   }, [id, listUseCase, setValue]);
 
   useEffect(() => {

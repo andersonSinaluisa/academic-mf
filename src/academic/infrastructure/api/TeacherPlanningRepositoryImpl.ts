@@ -3,6 +3,7 @@ import { TeacherPlanning } from "@/academic/domain/entities/TeacherPlanning";
 import { ApiInstance } from "./Api";
 import { TeacherPlanningOutputDto } from "./dto/TeacherPlanningDto";
 import { TeacherPlanningMapper } from "./mappers/TeacherPlanningMapper";
+import { Page } from "@/lib/utils";
 
 export class TeacherPlanningRepositoryImpl implements TeacherPlanningRepository {
     async create(planning: TeacherPlanning): Promise<TeacherPlanning> {
@@ -19,15 +20,21 @@ export class TeacherPlanningRepositoryImpl implements TeacherPlanningRepository 
         return res.data ? TeacherPlanningMapper.toDomain(res.data) : null;
     }
 
-    async list(teacherId?: number, subjectId?: number, courseId?: number): Promise<TeacherPlanning[]> {
+    async list(page: number, limit: number, teacherId?: number, subjectId?: number, courseId?: number, topic?: string): Promise<Page<TeacherPlanning>> {
         const params = new URLSearchParams();
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
         if (teacherId !== undefined) params.append('teacherId', teacherId.toString());
         if (subjectId !== undefined) params.append('subjectId', subjectId.toString());
         if (courseId !== undefined) params.append('courseId', courseId.toString());
-        const res = await ApiInstance.get<TeacherPlanningOutputDto[]>(
+        if (topic) params.append('topic', topic);
+        const res = await ApiInstance.get<Page<TeacherPlanningOutputDto>>(
             '/teacher-plannings',
             { params }
         );
-        return res.data.map(TeacherPlanningMapper.toDomain);
+        return {
+            ...res.data,
+            content: res.data.content.map(TeacherPlanningMapper.toDomain)
+        };
     }
 }

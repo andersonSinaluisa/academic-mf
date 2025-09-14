@@ -28,7 +28,7 @@ export const RepresentativeListContainer = () => {
 
     const fetchRepresentatives = useCallback(async () => {
         setLoading(true);
-        const res = await listUseCase.execute(new ListRepresentativesCommand(page, 10));
+        const res = await listUseCase.execute(new ListRepresentativesCommand(page, 10, filter));
         res
             .ifRight(data => {
                 if (data) setRepresentatives(data);
@@ -41,7 +41,7 @@ export const RepresentativeListContainer = () => {
                 });
             });
         setLoading(false);
-    }, [listUseCase, page]);
+    }, [listUseCase, page, filter]);
 
     useEffect(() => {
         fetchRepresentatives();
@@ -51,15 +51,9 @@ export const RepresentativeListContainer = () => {
         navigate({ pathname: "/representantes", search: `?page=1&filter=${term}` });
     };
 
-    const filteredContent = representatives.content.filter(r =>
-        `${r.firstName} ${r.lastName}`.toLowerCase().includes(filter.toLowerCase())
-    );
-
-    const data = { ...representatives, content: filteredContent };
-
     return (
         <RepresentativeListPresenter
-            representatives={data}
+            representatives={representatives}
             loading={loading}
             error={null}
             onAddRepresentative={() => navigate("/representantes/nuevo")}
