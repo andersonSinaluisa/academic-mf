@@ -3,6 +3,7 @@ import { RepresentativeRepository } from "@/academic/domain/interfaces/Represent
 import { ApiInstance } from "./Api";
 import { RepresentativeOutputDto } from "./dto/RepresentativeDto";
 import { RepresentativeMapper } from "./mappers/RepresentativeMapper";
+import { Page } from "@/lib/utils";
 
 export class RepresentativeRepositoryImpl implements RepresentativeRepository {
     async create(rep: Representative): Promise<Representative> {
@@ -10,12 +11,15 @@ export class RepresentativeRepositoryImpl implements RepresentativeRepository {
         return RepresentativeMapper.toDomain(res.data);
     }
 
-    async list(page: number, limit: number): Promise<Representative[]> {
+    async list(page: number, limit: number): Promise<Page<Representative>> {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("limit", limit.toString());
-        const res = await ApiInstance.get<RepresentativeOutputDto[]>("/representative", { params });
-        return res.data.map(RepresentativeMapper.toDomain);
+        const res = await ApiInstance.get<Page<RepresentativeOutputDto>>("/representative", { params });
+        return {
+            ...res.data,
+            content: res.data.content.map(RepresentativeMapper.toDomain),
+        };
     }
 
     async getById(id: number): Promise<Representative | null> {

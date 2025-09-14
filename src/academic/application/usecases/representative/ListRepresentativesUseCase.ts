@@ -4,6 +4,7 @@ import { Either, Left, Right } from "purify-ts/Either";
 import { AbstractFailure } from "@/academic/domain/entities/failure";
 import { Representative } from "@/academic/domain/entities/Representative";
 import { RepresentativeService } from "@/academic/domain/services/RepresentativeService";
+import { Page } from "@/lib/utils";
 import { REPRESENTATIVE_SYMBOLS } from "@/academic/domain/symbols/Representative";
 
 export class ListRepresentativesCommand implements UseCaseCommand {
@@ -14,13 +15,13 @@ export class ListRepresentativesCommand implements UseCaseCommand {
 }
 
 @injectable()
-export class ListRepresentativesUseCase implements UseCase<Representative[], ListRepresentativesCommand> {
+export class ListRepresentativesUseCase implements UseCase<Page<Representative>, ListRepresentativesCommand> {
     constructor(
         @inject(REPRESENTATIVE_SYMBOLS.SERVICE)
         private service: RepresentativeService
     ) { }
 
-    async execute(command: ListRepresentativesCommand): Promise<Either<AbstractFailure[], Representative[] | undefined>> {
+    async execute(command: ListRepresentativesCommand): Promise<Either<AbstractFailure[], Page<Representative> | undefined>> {
         try {
             const reps = await this.service.list(command.page, command.limit);
             return Right(reps);

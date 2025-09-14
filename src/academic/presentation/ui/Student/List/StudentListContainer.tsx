@@ -4,47 +4,65 @@ import { useInjection } from "inversify-react";
 import { STUDENT_SYMBOLS } from "@/academic/domain/symbols/Student";
 import { useCallback, useEffect, useState } from "react";
 import { Student } from "@/academic/domain/entities/Student";
+import { Page } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate, useSearchParams } from "react-router";
 
 export const StudentListContainer = () => {
     const listUseCase = useInjection<ListStudentsUseCase>(STUDENT_SYMBOLS.LIST_USE_CASE);
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
-    const [students, setStudents] = useState<Student[]>([]);
+    const page = Number(searchParams.get("page")) || 1;
+    const filter = searchParams.get("filter") || "";
+
+    const [students, setStudents] = useState<Page<Student>>({
+        content: [],
+        page: 0,
+        size: 10,
+        total: 0,
+        totalPage: 0
+    });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
 
     const fetchStudents = useCallback(async () => {
         setLoading(true);
-        setError(null);
-        const res = await listUseCase.execute(new ListStudentsCommand(1, 10));
+        const res = await listUseCase.execute(new ListStudentsCommand(page, 10));
         res.ifRight(data => {
-            setStudents(data ?? []);
+            if (data) setStudents(data);
         }).ifLeft(failures => {
-            setError(failures.map(f => f.message).join(", "));
+            const msg = failures.map(f => f.message).join(", ");
+            toast({
+                title: "Error",
+                description: msg,
+                variant: "destructive",
+            });
         });
         setLoading(false);
-    }, [listUseCase]);
+    }, [listUseCase, page]);
 
     useEffect(() => {
         fetchStudents();
     }, [fetchStudents]);
 
     const handleSearchChange = (term: string) => {
-        setSearchTerm(term);
+        navigate({ pathname: "/estudiantes", search: `?page=1&filter=${term}` });
     };
 
-    const filteredStudents = students.filter(s =>
-        `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredContent = students.content.filter(s =>
+        `${s.firstName} ${s.lastName}`.toLowerCase().includes(filter.toLowerCase())
     );
+
+    const data = { ...students, content: filteredContent };
 
     return (
         <StudentListPresenter
-            students={filteredStudents}
+            students={data}
             loading={loading}
-            error={error}
-            onAddStudent={() => { }}
+            error={null}
+            onAddStudent={() => navigate("/estudiantes/nuevo")}
             onSearchChange={handleSearchChange}
-            searchTerm={searchTerm}
+            searchTerm={filter}
         />
     );
 };
