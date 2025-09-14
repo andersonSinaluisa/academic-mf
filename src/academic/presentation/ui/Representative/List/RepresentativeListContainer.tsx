@@ -4,47 +4,67 @@ import { useInjection } from "inversify-react";
 import { REPRESENTATIVE_SYMBOLS } from "@/academic/domain/symbols/Representative";
 import { useCallback, useEffect, useState } from "react";
 import { Representative } from "@/academic/domain/entities/Representative";
+import { Page } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate, useSearchParams } from "react-router";
 
 export const RepresentativeListContainer = () => {
     const listUseCase = useInjection<ListRepresentativesUseCase>(REPRESENTATIVE_SYMBOLS.LIST_USE_CASE);
 
-    const [representatives, setRepresentatives] = useState<Representative[]>([]);
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const page = Number(searchParams.get("page")) || 1;
+    const filter = searchParams.get("filter") || "";
+
+    const [representatives, setRepresentatives] = useState<Page<Representative>>({
+        content: [],
+        page: 0,
+        size: 10,
+        total: 0,
+        totalPage: 0,
+    });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
 
     const fetchRepresentatives = useCallback(async () => {
         setLoading(true);
-        setError(null);
-        const res = await listUseCase.execute(new ListRepresentativesCommand(1, 10));
-        res.ifRight(data => {
-            setRepresentatives(data ?? []);
-        }).ifLeft(failures => {
-            setError(failures.map(f => f.message).join(", "));
-        });
+        const res = await listUseCase.execute(new ListRepresentativesCommand(page, 10));
+        res
+            .ifRight(data => {
+                if (data) setRepresentatives(data);
+            })
+            .ifLeft(failures => {
+                toast({
+                    title: "Error",
+                    description: failures.map(f => f.message).join(", "),
+                    variant: "destructive",
+                });
+            });
         setLoading(false);
-    }, [listUseCase]);
+    }, [listUseCase, page]);
 
     useEffect(() => {
         fetchRepresentatives();
     }, [fetchRepresentatives]);
 
     const handleSearchChange = (term: string) => {
-        setSearchTerm(term);
+        navigate({ pathname: "/representantes", search: `?page=1&filter=${term}` });
     };
 
-    const filteredReps = representatives.filter(r =>
-        `${r.firstName} ${r.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredContent = representatives.content.filter(r =>
+        `${r.firstName} ${r.lastName}`.toLowerCase().includes(filter.toLowerCase())
     );
+
+    const data = { ...representatives, content: filteredContent };
 
     return (
         <RepresentativeListPresenter
-            representatives={filteredReps}
+            representatives={data}
             loading={loading}
-            error={error}
-            onAddRepresentative={() => { }}
+            error={null}
+            onAddRepresentative={() => navigate("/representantes/nuevo")}
             onSearchChange={handleSearchChange}
-            searchTerm={searchTerm}
+            searchTerm={filter}
         />
     );
 };

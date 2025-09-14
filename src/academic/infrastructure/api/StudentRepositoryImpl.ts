@@ -3,6 +3,7 @@ import { Student } from "@/academic/domain/entities/Student";
 import { ApiInstance } from "./Api";
 import { StudentOutputDto } from "./dto/StudentDto";
 import { StudentMapper } from "./mappers/StudentMapper";
+import { Page } from "@/lib/utils";
 
 export class StudentRepositoryImpl implements StudentRepository {
     async create(student: Student): Promise<Student> {
@@ -13,16 +14,19 @@ export class StudentRepositoryImpl implements StudentRepository {
         return StudentMapper.toDomain(res.data);
     }
 
-    async list(page: number, limit: number, uuidParallel?: string): Promise<Student[]> {
+    async list(page: number, limit: number, uuidParallel?: string): Promise<Page<Student>> {
         const params = new URLSearchParams();
         params.append('page', page.toString());
         params.append('limit', limit.toString());
         if (uuidParallel) params.append('uuidParallel', uuidParallel);
-        const res = await ApiInstance.get<StudentOutputDto[]>(
+        const res = await ApiInstance.get<Page<StudentOutputDto>>(
             '/students',
             { params }
         );
-        return res.data.map(StudentMapper.toDomain);
+        return {
+            ...res.data,
+            content: res.data.content.map(StudentMapper.toDomain)
+        };
     }
 
     async getById(id: number): Promise<Student | null> {

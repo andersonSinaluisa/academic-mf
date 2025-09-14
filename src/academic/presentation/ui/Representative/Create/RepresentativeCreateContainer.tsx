@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 export const RepresentativeCreateContainer = () => {
     const createUseCase = useInjection<CreateRepresentativeUseCase>(REPRESENTATIVE_SYMBOLS.CREATE_USE_CASE);
 
-    const { register, handleSubmit, watch, formState: { isSubmitting } } = useForm<CreateRepresentativeCommand>({
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<CreateRepresentativeCommand>({
         defaultValues: {
             firstName: "",
             lastName: "",
@@ -54,6 +54,7 @@ export const RepresentativeCreateContainer = () => {
             onCancel={onCancel}
             handleSubmit={handleSubmit(onSubmit)}
             register={register}
+            errors={errors}
             loading={isSubmitting}
             formData={formData}
         />

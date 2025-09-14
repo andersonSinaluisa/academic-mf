@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, UserX } from "lucide-react";
 import { TeacherAssignment } from "@/academic/domain/entities/TeacherAssignment";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -31,7 +31,7 @@ export const TeacherAssignmentListPresenter = ({ assignments, loading, error, se
           <Input placeholder="Buscar por docente" value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="max-w-sm" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {loading && <Skeleton className="h-24 w-full col-span-full" />}
+          {loading && <Skeleton role="status" className="h-24 w-full col-span-full" />}
           {error && <div className="text-destructive text-center col-span-full">{error}</div>}
           {assignments.map(a => (
             <Card key={a.id} className="hover:shadow-md transition-shadow">
@@ -43,7 +43,17 @@ export const TeacherAssignmentListPresenter = ({ assignments, loading, error, se
             </Card>
           ))}
         </div>
-        {assignments.length === 0 && !loading && !error && <div className="text-center py-8 text-muted-foreground">No se encontraron asignaciones</div>}
+        {assignments.length === 0 && !loading && !error && (
+          <div className="col-span-3 text-center py-8 text-muted-foreground w-full flex flex-col items-center space-y-4">
+            <UserX className="h-12 w-12 text-muted-foreground" />
+            <p className="text-lg font-medium">
+              {searchTerm
+                ? `No encontramos resultados para "${searchTerm}".`
+                : "No hay asignaciones registradas aún."}
+            </p>
+            {!searchTerm && <Button onClick={onAddAssignment}>Registrar asignación</Button>}
+          </div>
+        )}
       </CardContent>
     </Card>
   </div>

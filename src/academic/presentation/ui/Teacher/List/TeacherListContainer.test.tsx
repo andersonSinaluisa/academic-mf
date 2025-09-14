@@ -124,15 +124,19 @@ describe("TeacherListContainer", () => {
         });
 
     });
-    it("muestra skeleton mientras carga", () => {
-        const { getByRole } = render(
+    it("muestra skeleton mientras carga", async () => {
+        listUseCase = {
+            execute: vi.fn(() => new Promise(() => {})),
+        } as unknown as ListTeachersUseCase;
+
+        const { findByRole } = render(
             <MemoryRouter>
                 <TeacherListContainer />
             </MemoryRouter>
         );
-        expect(getByRole("status")).toBeInTheDocument(); // Skeleton tiene role="status"
-    }
-    );
+
+        expect(await findByRole("status")).toBeInTheDocument(); // Skeleton tiene role="status"
+    });
 
     it("llama a la función de búsqueda al cambiar el término de búsqueda", async () => {
         

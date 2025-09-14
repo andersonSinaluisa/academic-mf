@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, UserX } from "lucide-react";
 import { Representative } from "@/academic/domain/entities/Representative";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Page } from "@/lib/utils";
 
 interface RepresentativeListPresenterProps {
-    representatives: Representative[];
+    representatives: Page<Representative>;
     loading: boolean;
     error: string | null;
     searchTerm: string;
@@ -49,11 +51,11 @@ export function RepresentativeListPresenter({
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {loading && <Skeleton className="h-24 w-full col-span-full" />}
+                        {loading && <Skeleton role="status" className="h-24 w-full col-span-full" />}
                         {error && (
                             <div className="text-destructive text-center col-span-full">{error}</div>
                         )}
-                        {representatives.map((rep) => (
+                {representatives.content.map((rep) => (
                             <Card key={rep.id} className="hover:shadow-md transition-shadow">
                                 <CardContent className="p-4">
                                     <div className="flex items-start gap-3">
@@ -78,11 +80,39 @@ export function RepresentativeListPresenter({
                         ))}
                     </div>
 
-                    {representatives.length === 0 && !loading && !error && (
-                        <div className="text-center py-8 text-muted-foreground">
-                            No se encontraron representantes
+                        {representatives.content.length === 0 && !loading && !error && (
+                        <div className="col-span-3 text-center py-8 text-muted-foreground w-full flex flex-col items-center space-y-4">
+                            <UserX className="h-12 w-12 text-muted-foreground" />
+                            <p className="text-lg font-medium">
+                                {searchTerm
+                                    ? `No encontramos resultados para "${searchTerm}".`
+                                    : "No hay representantes registrados aún."}
+                            </p>
+                            {!searchTerm && (
+                                <Button onClick={onAddRepresentative}>
+                                    Registrar representante
+                                </Button>
+                            )}
                         </div>
                     )}
+
+                    <Pagination className="col-span-full justify-center">
+                        <PaginationPrevious className="bg-background" />
+                        {representatives.total > 1 && Array.from({ length: representatives.totalPage }).map((_, index) => (
+                            <PaginationLink
+                                key={`page-${index + 1}`}
+                                href={`/representantes?page=${index + 1}`}
+                                isActive={index === representatives.page}
+                                className="bg-background"
+                            >
+                                {index + 1}
+                            </PaginationLink>
+                        ))}
+                        <PaginationNext className="bg-background" />
+                    </Pagination>
+                    <div className="col-span-full text-center text-sm text-muted-foreground">
+                        Página {representatives.page} de {representatives.totalPage} - Total de representantes: {representatives.total}
+                    </div>
                 </CardContent>
             </Card>
         </div>

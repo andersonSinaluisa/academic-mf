@@ -108,7 +108,7 @@ export const TeacherCreatePresenter = ({
                                                 <Select
                                                     name={field.name}
                                                     onValueChange={field.onChange}
-                                                    value={field.value}
+                                                    value={field.value ?? ""}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Seleccionar género" />

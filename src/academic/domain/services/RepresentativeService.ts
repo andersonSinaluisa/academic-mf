@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Representative } from "../entities/Representative";
 import { RepresentativeRepository } from "../interfaces/RepresentativeRepository";
+import { Page } from "@/lib/utils";
 import { REPRESENTATIVE_SYMBOLS } from "../symbols/Representative";
 
 @injectable()
@@ -14,7 +15,7 @@ export class RepresentativeService {
         return this.repository.create(rep);
     }
 
-    async list(page: number, limit: number): Promise<Representative[]> {
+    async list(page: number, limit: number): Promise<Page<Representative>> {
         return this.repository.list(page, limit);
     }
 

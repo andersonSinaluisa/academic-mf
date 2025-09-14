@@ -4,19 +4,28 @@ import { TEACHER_ASSIGNMENT_SYMBOLS } from "@/academic/domain/symbols/TeacherAss
 import { useInjection } from "inversify-react";
 import { useCallback, useEffect, useState } from "react";
 import { TeacherAssignment } from "@/academic/domain/entities/TeacherAssignment";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router";
 
 export const TeacherAssignmentListContainer = () => {
   const listUseCase = useInjection<ListTeacherAssignmentsUseCase>(TEACHER_ASSIGNMENT_SYMBOLS.LIST_USE_CASE);
+  const navigate = useNavigate();
   const [assignments, setAssignments] = useState<TeacherAssignment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    setError(null);
     const res = await listUseCase.execute(new ListTeacherAssignmentsCommand());
-    res.ifRight(data => setAssignments(data ?? [])).ifLeft(f => setError(f.map(x => x.message).join(", ")));
+    res
+      .ifRight(data => setAssignments(data ?? []))
+      .ifLeft(f =>
+        toast({
+          title: "Error",
+          description: f.map(x => x.message).join(", "),
+          variant: "destructive",
+        })
+      );
     setLoading(false);
   }, [listUseCase]);
 
@@ -28,10 +37,10 @@ export const TeacherAssignmentListContainer = () => {
     <TeacherAssignmentListPresenter
       assignments={filtered}
       loading={loading}
-      error={error}
+      error={null}
       searchTerm={searchTerm}
       onSearchChange={setSearchTerm}
-      onAddAssignment={() => {}}
+      onAddAssignment={() => navigate("/asignaciones-docentes/nuevo")}
     />
   );
 };

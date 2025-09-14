@@ -14,28 +14,36 @@ export const StudentEditContainer = () => {
     const updateUseCase = useInjection<UpdateStudentUseCase>(STUDENT_SYMBOLS.UPDATE_USE_CASE);
     const getUseCase = useInjection<GetStudentUseCase>(STUDENT_SYMBOLS.GET_USE_CASE);
 
-    const { handleSubmit, register, watch, setValue, formState: { errors, isSubmitting } } = useForm<UpdateStudentCommand>();
+    const { handleSubmit, register, watch, setValue, formState: { errors, isSubmitting } } = useForm<UpdateStudentCommand>({
+        defaultValues: {
+            id: 0,
+            firstName: "",
+            lastName: "",
+            uuidParallel: "",
+        },
+    });
 
     const formData = watch();
 
     const fetchStudent = useCallback(async () => {
         if (!id) return;
         const res = await getUseCase.execute(new GetStudentCommand(Number(id)));
-        res.ifRight((student) => {
-            if (!student) return;
-            setValue("id", student.id);
-            setValue("firstName", student.firstName);
-            setValue("lastName", student.lastName);
-            setValue("uuidParallel", student.uuidParallel);
-        });
-        res.ifLeft((failures) => {
-            toast({
-                title: "Error",
-                description: "Error al obtener el estudiante: " + failures.map(f => f.message).join(", "),
-                duration: 5000,
-                variant: "destructive",
+        res
+            .ifRight((student) => {
+                if (!student) return;
+                setValue("id", student.id);
+                setValue("firstName", student.firstName);
+                setValue("lastName", student.lastName);
+                setValue("uuidParallel", student.uuidParallel);
+            })
+            .ifLeft((failures) => {
+                toast({
+                    title: "Error",
+                    description: "Error al obtener el estudiante: " + failures.map(f => f.message).join(", "),
+                    duration: 5000,
+                    variant: "destructive",
+                });
             });
-        });
     }, [getUseCase, id, setValue]);
 
     useEffect(() => {
@@ -44,21 +52,22 @@ export const StudentEditContainer = () => {
 
     const onSubmit = async (data: UpdateStudentCommand) => {
         const res = await updateUseCase.execute(data);
-        res.ifRight((student) => {
-            toast({
-                title: "Estudiante actualizado",
-                description: `El estudiante ${student?.firstName} ${student?.lastName} ha sido actualizado.`,
-                duration: 5000,
+        res
+            .ifRight((student) => {
+                toast({
+                    title: "Estudiante actualizado",
+                    description: `El estudiante ${student?.firstName} ${student?.lastName} ha sido actualizado.`,
+                    duration: 5000,
+                });
+            })
+            .ifLeft((failures) => {
+                toast({
+                    title: "Error",
+                    description: "Error al actualizar el estudiante: " + failures.map(f => f.message).join(", "),
+                    duration: 5000,
+                    variant: "destructive",
+                });
             });
-        });
-        res.ifLeft((failures) => {
-            toast({
-                title: "Error",
-                description: "Error al actualizar el estudiante: " + failures.map(f => f.message).join(", "),
-                duration: 5000,
-                variant: "destructive",
-            });
-        });
     };
 
     return (

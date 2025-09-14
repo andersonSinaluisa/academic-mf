@@ -7,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, ShieldCheck } from "lucide-react";
-import { UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 interface RepresentativeEditPresenterProps {
     onCancel: () => void;
     handleSubmit: React.FormEventHandler<HTMLFormElement>;
     register: UseFormRegister<UpdateRepresentativeCommand>;
+    errors: FieldErrors<UpdateRepresentativeCommand>;
     loading?: boolean;
     formData: UpdateRepresentativeCommand;
 }
@@ -21,6 +22,7 @@ export const RepresentativeEditPresenter = ({
     onCancel,
     handleSubmit,
     register,
+    errors,
     loading,
     formData,
 }: RepresentativeEditPresenterProps) => {
@@ -50,6 +52,9 @@ export const RepresentativeEditPresenter = ({
                                             id="firstName"
                                             {...register("firstName", { required: "El nombre es obligatorio" })}
                                         />
+                                        {errors.firstName && (
+                                            <div className="text-destructive text-sm">{errors.firstName.message}</div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="lastName">Apellido *</Label>
@@ -57,6 +62,9 @@ export const RepresentativeEditPresenter = ({
                                             id="lastName"
                                             {...register("lastName", { required: "El apellido es obligatorio" })}
                                         />
+                                        {errors.lastName && (
+                                            <div className="text-destructive text-sm">{errors.lastName.message}</div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="identification">Identificación</Label>

@@ -52,6 +52,9 @@ export const StudentEditPresenter = ({
                                             id="firstName"
                                             {...register("firstName", { required: "El nombre es obligatorio" })}
                                         />
+                                        {errors.firstName && (
+                                            <div className="text-destructive text-sm">{errors.firstName.message}</div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="lastName">Apellido *</Label>
@@ -59,6 +62,9 @@ export const StudentEditPresenter = ({
                                             id="lastName"
                                             {...register("lastName", { required: "El apellido es obligatorio" })}
                                         />
+                                        {errors.lastName && (
+                                            <div className="text-destructive text-sm">{errors.lastName.message}</div>
+                                        )}
                                     </div>
                                     <div className="space-y-2 md:col-span-2">
                                         <Label htmlFor="uuidParallel">Paralelo *</Label>

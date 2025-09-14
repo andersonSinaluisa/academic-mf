@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Student } from "../entities/Student";
 import { StudentRepository } from "../interfaces/StudentRepository";
+import { Page } from "@/lib/utils";
 import { STUDENT_SYMBOLS } from "../symbols/Student";
 
 @injectable()
@@ -14,7 +15,7 @@ export class StudentService {
         return this.repository.create(student);
     }
 
-    async list(page: number, limit: number, uuidParallel?: string): Promise<Student[]> {
+    async list(page: number, limit: number, uuidParallel?: string): Promise<Page<Student>> {
         return this.repository.list(page, limit, uuidParallel);
     }
 
