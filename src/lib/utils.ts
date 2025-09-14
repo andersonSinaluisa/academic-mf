@@ -9,9 +9,8 @@ export function cn(...inputs: ClassValue[]) {
 //Page spring 
 export interface Page<T> {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  pageNumber: number;
-  pageSize: number;
-  isLastPage: boolean;
+  page: number;
+  size: number;
+  total: number;
+  totalPage: number;
 }

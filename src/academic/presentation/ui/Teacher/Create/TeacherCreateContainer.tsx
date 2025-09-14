@@ -4,6 +4,7 @@ import { TeacherCreatePresenter } from "./TeacherCreatePresenter"
 import { useInjection } from "inversify-react"
 import { TEACHER_SYMBOLS } from "@/academic/domain/symbols/Teacher"
 import { toast } from "@/hooks/use-toast"
+import { useNavigate } from "react-router"
 
 
 export const TeacherCreateContainer = () => {
@@ -46,15 +47,16 @@ export const TeacherCreateContainer = () => {
             })
         });
     }
+    const navigation = useNavigate()
 
     const onCancel = () => {
-        // Implement navigation or state reset logic here
+        navigation('/docentes')
     }
 
     
     return (
         <TeacherCreatePresenter
-            onCancel={() => {}}
+            onCancel={onCancel}
             handleSubmit={handleSubmit(onSubmit)}
             register={register}
             errors={errors}

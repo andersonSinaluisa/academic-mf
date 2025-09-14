@@ -3,7 +3,7 @@ import { TeacherEditPresenter } from "./TeacherEditPresenter"
 import { UpdateTeacherCommand, UpdateTeacherUseCase } from "@/academic/application/usecases/teacher/UpdateTeacherUseCase"
 import { useInjection } from "inversify-react"
 import { TEACHER_SYMBOLS } from "@/academic/domain/symbols/Teacher"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { GetTeacherCommand, GetTeacherUseCase } from "@/academic/application/usecases/teacher/GetTeacherUseCase"
 import { useCallback, useEffect } from "react"
 import { toast } from "@/hooks/use-toast"
@@ -19,12 +19,30 @@ export const TeacherEditContainer = () => {
     const { control, handleSubmit, register,
         watch,
         setValue,
-        formState: { errors, isSubmitting } } = useForm<UpdateTeacherCommand>()
+        formState: { errors, isSubmitting } } = useForm<UpdateTeacherCommand>({
+        defaultValues: {
+            id: 0,
+            firstName: "",
+            lastName: "",
+            identification: "",
+            phone: "",
+            birthDate: "",
+        }
+        })
 
     const formData = watch()
 
+    
     const fetchTeacher = useCallback(async() => {
-        if(!id) return
+        if(!id) {
+            toast({
+                title: "Error",
+                description: "ID de profesor no proporcionado",
+                duration: 5000,
+                variant: "destructive"
+            })
+            return
+        }
         const res = await getUseCase.execute(
             new GetTeacherCommand(Number(id))
         )
@@ -42,8 +60,7 @@ export const TeacherEditContainer = () => {
             setValue("nationality", teacher.nationality || "")
             setValue("gender", teacher.gender || "")
             setValue("image", teacher.image || "")
-        })
-        res.ifLeft((failures) => {
+        }).ifLeft((failures) => {
             toast({
                 title: "Error",
                 description: "Error al obtener el profesor: " + failures.map(f => f.message).join(", "),
@@ -52,7 +69,6 @@ export const TeacherEditContainer = () => {
             })
         })
     }, [getUseCase, id])
-
 
     useEffect(() => {
         fetchTeacher()
@@ -65,17 +81,33 @@ export const TeacherEditContainer = () => {
     const onSubmit = async(data: UpdateTeacherCommand) => {
         const res = await updateUseCase.execute(data)
         res.ifRight((teacher) => {
-            console.log("Teacher updated successfully:", teacher)
+            console.log("Submitting data:", teacher);
+
+            toast({
+                title: "Éxito",
+                description: "Profesor actualizado correctamente "+ (teacher ? teacher.firstName + " " + teacher.lastName : ""),
+                duration: 5000,
+            })
+            handleCancel()
+        }).ifLeft((failures) => {
+            toast({
+                title: "Error",
+                description: "Error al actualizar el profesor: " + failures.map(f => f.message).join(", "),
+                duration: 5000,
+                variant: "destructive"
+            })
         })
-        res.ifLeft((failures) => {
-            console.error("Failed to update teacher:", failures)
-        })
+    }
+    const navigate = useNavigate()
+    const handleCancel = () => {
+        // Lógica para manejar la cancelación, como redirigir a otra página
+        navigate("/docentes")
     }
 
     return (
         <TeacherEditPresenter
-            onCancel={() => {}}
-            handleSubmit={handleSubmit(onSubmit)}
+            onCancel={handleCancel}
+            onSubmit={handleSubmit(onSubmit)}
             register={register}
             errors={errors}
             loading={isSubmitting}

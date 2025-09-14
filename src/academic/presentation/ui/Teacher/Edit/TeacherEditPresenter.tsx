@@ -12,7 +12,7 @@ import { Control, Controller, FieldErrors, UseFormRegister } from "react-hook-fo
 
 interface TeacherEditPresenterProps {
     onCancel: () => void;
-    handleSubmit: React.FormEventHandler<HTMLFormElement>
+    onSubmit: React.FormEventHandler<HTMLFormElement>
     register: UseFormRegister<UpdateTeacherCommand>
     errors: FieldErrors<UpdateTeacherCommand>
     loading?: boolean
@@ -22,7 +22,7 @@ interface TeacherEditPresenterProps {
 
 export const TeacherEditPresenter = ({
     onCancel,
-    handleSubmit,
+    onSubmit,
     register,
     errors,
     loading,
@@ -36,7 +36,7 @@ export const TeacherEditPresenter = ({
             description="Completa los campos para registrar un nuevo profesor."
             breadcrumbs={[
                 { label: "Profesores", href: "/profesores" },
-                { label: "Editar Profesor" }
+                { label: formData.firstName || "", href: "#" }
             ]}
             main={
                 <div className="lg:col-span-2">
@@ -48,7 +48,7 @@ export const TeacherEditPresenter = ({
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            <form onSubmit={onSubmit} className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="firstName">Nombre *</Label>
@@ -56,6 +56,9 @@ export const TeacherEditPresenter = ({
                                             id="firstName"
                                             {...register("firstName", { required: "El nombre es obligatorio" })}
                                         />
+                                        {
+                                            errors && <div className="text-destructive text-sm">{errors.firstName?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -64,6 +67,9 @@ export const TeacherEditPresenter = ({
                                             id="lastName"
                                             {...register("lastName", { required: "El apellido es obligatorio" })}
                                         />
+                                        {
+                                            errors && <div className="text-destructive text-sm">{errors.lastName?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -72,6 +78,8 @@ export const TeacherEditPresenter = ({
                                             id="identification"
                                             {...register("identification", { required: "La identificación es obligatoria" })}
                                         />
+                                        {errors && <div className="text-destructive text-sm">{errors.identification?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -86,6 +94,8 @@ export const TeacherEditPresenter = ({
                                             type="date"
                                             {...register("birthDate", { required: "La fecha de nacimiento es obligatoria" })}
                                         />
+                                        {errors && <div className="text-destructive text-sm">{errors.birthDate?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -109,17 +119,24 @@ export const TeacherEditPresenter = ({
                                                 </Select>
                                             )}
                                         />
+                                        {errors && <div className="text-destructive text-sm">
+                                            {errors.gender?.message}
+                                        </div>}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="address">Dirección</Label>
                                     <Input id="address" {...register("address")} />
+                                    {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}
+
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="nationality">Nacionalidad</Label>
                                     <Input id="nationality" {...register("nationality")} />
+                                    {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}
+
                                 </div>
 
                                 {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}

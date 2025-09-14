@@ -5,6 +5,7 @@ import { AbstractFailure } from "@/academic/domain/entities/failure";
 import { Teacher } from "@/academic/domain/entities/Teacher";
 import { TeacherService } from "@/academic/domain/services/TeacherService";
 import { TEACHER_SYMBOLS } from "@/academic/domain/symbols/Teacher";
+import { Page } from "@/lib/utils";
 
 export class ListTeachersCommand implements UseCaseCommand {
     constructor(
@@ -18,13 +19,13 @@ export class ListTeachersCommand implements UseCaseCommand {
 }
 
 @injectable()
-export class ListTeachersUseCase implements UseCase<Teacher[], ListTeachersCommand> {
+export class ListTeachersUseCase implements UseCase<Page<Teacher>, ListTeachersCommand> {
     constructor(
         @inject(TEACHER_SYMBOLS.SERVICE)
         private service: TeacherService
     ) { }
 
-    async execute(command: ListTeachersCommand): Promise<Either<AbstractFailure[], Teacher[] | undefined>> {
+    async execute(command: ListTeachersCommand): Promise<Either<AbstractFailure[], Page<Teacher> | undefined>> {
         try {
             const teachers = await this.service.list(command.page, command.limit, command.firstName, command.lastName, command.identification, command.gender);
             return Right(teachers);

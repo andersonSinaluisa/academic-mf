@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertCircle, ShieldCheck, } from "lucide-react"
 import { Control, Controller, FieldErrors, UseFormRegister } from "react-hook-form"
 
-interface TeacherCreatePresenterProps {
+export interface TeacherCreatePresenterProps {
     onCancel: () => void;
     handleSubmit: React.FormEventHandler<HTMLFormElement>
     register: UseFormRegister<CreateTeacherCommand>
@@ -35,7 +35,7 @@ export const TeacherCreatePresenter = ({
             title="Nuevo Profesor"
             description="Completa los campos para registrar un nuevo profesor."
             breadcrumbs={[
-                { label: "Profesores", href: "/profesores" },
+                { label: "Profesores", href: "/docentes" },
                 { label: "Nuevo Profesor" }
             ]}
             main={
@@ -56,6 +56,9 @@ export const TeacherCreatePresenter = ({
                                             id="firstName"
                                             {...register("firstName", { required: "El nombre es obligatorio" })}
                                         />
+                                        {
+                                            errors && <div className="text-destructive text-sm">{errors.firstName?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -64,6 +67,10 @@ export const TeacherCreatePresenter = ({
                                             id="lastName"
                                             {...register("lastName", { required: "El apellido es obligatorio" })}
                                         />
+                                        {
+                                            errors && <div className="text-destructive text-sm">{errors.lastName?.message}</div>
+                                        }
+                                        
                                     </div>
 
                                     <div className="space-y-2">
@@ -72,6 +79,8 @@ export const TeacherCreatePresenter = ({
                                             id="identification"
                                             {...register("identification", { required: "La identificación es obligatoria" })}
                                         />
+                                        {errors && <div className="text-destructive text-sm">{errors.identification?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -86,6 +95,8 @@ export const TeacherCreatePresenter = ({
                                             type="date"
                                             {...register("birthDate", { required: "La fecha de nacimiento es obligatoria" })}
                                         />
+                                        {errors && <div className="text-destructive text-sm">{errors.birthDate?.message}</div>
+                                        }
                                     </div>
 
                                     <div className="space-y-2">
@@ -109,23 +120,29 @@ export const TeacherCreatePresenter = ({
                                                 </Select>
                                             )}
                                         />
+                                        {errors && <div className="text-destructive text-sm">
+                                            {errors.gender?.message}
+                                        </div>}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="address">Dirección</Label>
                                     <Input id="address" {...register("address")} />
+                                    {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="nationality">Nacionalidad</Label>
                                     <Input id="nationality" {...register("nationality")} />
+                                    {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}
                                 </div>
 
-                                {errors && <div className="text-destructive text-sm">{errors.address?.message}</div>}
 
                                 <div className="flex gap-2 pt-4">
-                                    <Button type="submit" disabled={loading} className="flex-1">
+                                    <Button type="submit" 
+                                    disabled={loading} 
+                                    className="flex-1">
                                         {loading ? "Guardando..." : "Guardar"}
                                     </Button>
                                     <Button

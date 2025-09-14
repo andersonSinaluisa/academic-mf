@@ -1,3 +1,5 @@
+import { isAxiosError } from "axios";
+
 export default interface Failure {
     getMessage(): string;
     getCode(): string;
@@ -22,6 +24,17 @@ export class AbstractFailure implements Failure {
 
 
     static fromError(error: any): AbstractFailure {
+        if(isAxiosError(error)){
+            const responseData = error.response?.data;
+            if (responseData && typeof responseData === 'object') {
+                const code = responseData.code || 'UNKNOWN_ERROR';
+                const message = responseData.message || 'An error occurred';
+                const field = responseData.field || '';
+                return new AbstractFailure(code, message, field);
+            }
+            return new AbstractFailure('NETWORK_ERROR', responseData, '');
+        }
+
         if (error instanceof AbstractFailure) {
             return error;
         }
