@@ -65,8 +65,8 @@ export function StudentListPresenter({
                                                 alt={`${student.firstName} ${student.lastName}`}
                                             />
                                             <AvatarFallback>
-                                                {student.firstName[0]}
-                                                {student.lastName[0]}
+                                                {student.firstName}
+                                                {student.lastName}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
@@ -116,6 +116,7 @@ export function StudentListPresenter({
                     <div className="col-span-full text-center text-sm text-muted-foreground">
                         Página {students.page} de {students.totalPage} - Total de estudiantes: {students.total}
                     </div>
+
                 </CardContent>
             </Card>
         </div>

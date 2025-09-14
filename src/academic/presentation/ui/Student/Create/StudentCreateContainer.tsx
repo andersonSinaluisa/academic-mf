@@ -9,11 +9,21 @@ export const StudentCreateContainer = () => {
     const createStudentUsecase = useInjection<CreateStudentUseCase>(STUDENT_SYMBOLS.CREATE_USE_CASE);
 
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<CreateStudentCommand>({
-        defaultValues: {
-            firstName: "",
-            lastName: "",
-            uuidParallel: "",
-        }
+        defaultValues: new CreateStudentCommand(
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+        )
     });
 
     const formData = watch();

@@ -44,6 +44,7 @@ export const StudentCreatePresenter = ({
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
+                            
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -73,10 +74,79 @@ export const StudentCreatePresenter = ({
                                             {...register("uuidParallel", { required: "El paralelo es obligatorio" })}
                                         />
                                     </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone">Teléfono</Label>
+                                        <Input
+                                            id="phone"
+                                            {...register("phone")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="birthDate">Fecha de Nacimiento</Label>
+                                        <Input {...register("birthDate")} type="date" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="uuidUser">UUID Usuario</Label>
+                                        <Input
+                                            id="uuidUser"
+                                            {...register("uuidUser")}
+
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="address">Dirección</Label>
+                                        <Input
+                                            id="address"
+                                            {...register("address")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="identification">Identificación</Label>
+                                        <Input
+                                            id="identification"
+                                            {...register("identification")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nationality">Nacionalidad</Label>
+                                        <Input
+                                            id="nationality"
+                                            {...register("nationality")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="uuidSection">UUID Sección</Label>
+                                        <Input
+                                            id="uuidSection"
+                                            {...register("uuidCurrentSection")}
+                                        />
+                                        {errors.uuidCurrentSection && (
+                                            <div className="text-destructive text-sm">{errors.uuidCurrentSection.message}</div>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="uuidCurrentSchoolYear">UUID Periodo Lectivo</Label>
+                                        <Input
+                                            id="uuidCurrentSchoolYear"
+                                            {...register("uuidCurrentSchoolYear")}
+                                        />
+                                        {errors.uuidCurrentSchoolYear && (
+                                            <div className="text-destructive text-sm">{errors.uuidCurrentSchoolYear.message}</div>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="uuidParallel">UUID Paralelo</Label>
+                                        <Input
+                                            id="uuidParallel"
+                                            {...register("uuidParallel")}
+                                        />
+                                        {errors.uuidParallel && (
+                                            <div className="text-destructive text-sm">{errors.uuidParallel.message}</div>
+                                        )}
+                                    </div>
+                                    
                                 </div>
-                                {errors.uuidParallel && (
-                                    <div className="text-destructive text-sm">{errors.uuidParallel.message}</div>
-                                )}
                                 <div className="flex gap-2 pt-4">
                                     <Button type="submit" disabled={loading} className="flex-1">
                                         {loading ? "Guardando..." : "Guardar"}
