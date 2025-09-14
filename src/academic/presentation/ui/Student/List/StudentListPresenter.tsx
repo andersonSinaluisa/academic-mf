@@ -65,8 +65,8 @@ export function StudentListPresenter({
                                                 alt={`${student.firstName} ${student.lastName}`}
                                             />
                                             <AvatarFallback>
-                                                {student.firstName[0]}
-                                                {student.lastName[0]}
+                                                {student.firstName}
+                                                {student.lastName}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 min-w-0">
